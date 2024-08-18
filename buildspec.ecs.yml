@@ -1,0 +1,39 @@
+version: 0.2
+phases: 
+  install:
+    commands:
+      - aws --version
+      - pip3 install awscli --upgrade --user
+      - aws --version
+  pre_build: 
+    commands: 
+    - echo Logging in to Amazon ECR.... 
+
+    # update the following line with your own region
+    - REPOSITORY_URI=your_repo_uri_here
+    - DEFAULT_REGION=us-east-1
+
+    - aws ecr get-login-password --region $DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+
+  build: 
+    commands: 
+    - echo Build started on `date` 
+    - echo Building the Docker image... 
+
+    - docker build -t my_art_gallery .
+    - docker tag my_art_gallery $REPOSITORY_URI\:latest 
+  post_build: 
+    commands: 
+    - echo Build completed on `date` 
+    - echo pushing to repo
+
+    # update the following line with the URI of your own ECR repository
+    - docker push $REPOSITORY_URI\:latest
+
+    - echo Writing image definitions file... 
+    - printf '{"ImageURI":"%s"}' $REPOSITORY_URI\:latest > imageDetail.json
+    - cp appspec.ecs.yml appspec.yml
+artifacts:
+  files:
+    - imageDetail.json
+    - appspec.yml
