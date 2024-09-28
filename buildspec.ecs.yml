@@ -10,8 +10,8 @@ phases:
     - echo Logging in to Amazon ECR.... 
 
     # update the following line with your own region
-    - REPOSITORY_URI=your_repo_uri_here
-    - DEFAULT_REGION=us-east-1
+    - REPOSITORY_URI=901600929407.dkr.ecr.eu-north-1.amazonaws.com/vttanhua/my_art_gallery
+    - DEFAULT_REGION=eu-north-1
 
     - aws ecr get-login-password --region $DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
 
